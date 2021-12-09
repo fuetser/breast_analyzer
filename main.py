@@ -50,7 +50,7 @@ class Window(QMainWindow):
     def create_add_record_action(self):
         addAc = QAction("Добавить запись", self)
         addAc.setShortcut("Ctrl+N")
-        addAc.triggered.connect(self.add_record_window.show)
+        addAc.triggered.connect(self.show_add_record_window)
         return addAc
 
     def prepare_model(self):
@@ -154,7 +154,7 @@ class Window(QMainWindow):
         for col in range(len(self.data_user['diagnosis'])):
             self.data_user.loc[col, 'diagnosis'] = self.listofmandb.pop(0)
 
-        self.data_user.to_csv('result.csv', encoding='utf-8')
+        self.data_user.to_csv('result.csv', encoding='utf-8', index=None)
 
         with open('result.csv', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter=',')
@@ -169,6 +169,10 @@ class Window(QMainWindow):
 
         self.statusBar().showMessage('Программа работает с точностью - 93%')
         self.tableWidget.resizeColumnsToContents()
+
+    def show_add_record_window(self):
+        if self.user_filename:
+            self.add_record_window.show()
 
     def add_record(self):
         data = self.add_record_window.get_dict()
