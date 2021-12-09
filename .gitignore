@@ -3,3 +3,4 @@ venv
 result.csv
 example.csv
 *xlsx
+*.pickle

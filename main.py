@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
+import pickle
 import sys
 import csv
 from widgets import *
@@ -13,8 +14,13 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        self.prepare_model()
         self.user_filename = None
+        self.model_filename = "model.pickle"
+        try:
+            self.load_model()
+        except Exception as err:
+            print(err)
+            self.prepare_model()
 
     def setup_ui(self):
         vbox = QHBoxLayout()
@@ -52,6 +58,14 @@ class Window(QMainWindow):
         addAc.setShortcut("Ctrl+N")
         addAc.triggered.connect(self.show_add_record_window)
         return addAc
+
+    def save_model(self):
+        with open(self.model_filename, "wb") as f:
+            pickle.dump(self.tree, f)
+
+    def load_model(self):
+        with open(self.model_filename, "rb") as f:
+            self.tree = pickle.load(f)
 
     def prepare_model(self):
         self.data = pd.read_csv('data.csv')
@@ -92,6 +106,7 @@ class Window(QMainWindow):
 
         self.tree = DecisionTreeClassifier(max_depth=4)
         self.tree.fit(self.X_train, self.Y_train)
+        self.save_model()
 
     def read_file(self):
         fname = QFileDialog.getOpenFileName(self, 'Выберите файл', '', '*.csv')[0]
